@@ -1,7 +1,7 @@
 <div align="center">
   <img src="icon.png" alt="UHook Configurator Logo" width="128" height="128" />
   <h1>UHook Configurator</h1>
-  <p><strong>A smart, zero-friction Git Hook installer for Unreal Engine artists and developers.</strong></p>
+  <p><strong>A smart, zero-friction Git Hook installer for Unreal Engine artists and developers for autobuilding on pull.</strong></p>
 </div>
 
 <br/>
