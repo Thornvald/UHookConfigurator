@@ -1,0 +1,72 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  windows-installer:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install frontend dependencies
+        run: bun install --frozen-lockfile
+        working-directory: frontend
+
+      - name: Build frontend
+        run: bun run build
+        working-directory: frontend
+
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli --version "^2" --locked
+
+      - name: Build NSIS installer
+        run: cargo tauri build -b nsis -c '{"build":{"beforeBuildCommand":""}}'
+        working-directory: src-tauri
+
+      - name: Rename installer asset
+        shell: pwsh
+        run: |
+          $source = Get-ChildItem "src-tauri/target/release/bundle/nsis" -Filter "*_x64-setup.exe" | Select-Object -First 1
+          if (-not $source) {
+            throw "Installer was not created."
+          }
+          $tag = $env:GITHUB_REF_NAME -replace '^v', ''
+          $assetName = "UHook.Configurator_${tag}_x64-setup.exe"
+          Copy-Item $source.FullName "src-tauri/target/release/bundle/nsis/$assetName"
+
+      - name: Write release notes
+        shell: pwsh
+        run: |
+          @"
+          ## Changes
+          - Detect the Unreal editor build target from `Source/*.Target.cs` first, with `Source/*.Build.cs` as a fallback.
+          - Resolve UnrealBuildTool and the build target in the backend during hook installation so stale UI state cannot generate an outdated command.
+          - Re-check the current `.uproject` and target files inside the hook script so project renames do not leave the post-merge build command pointing at the old name.
+          "@ | Set-Content release-notes.md
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: UHook Configurator ${{ github.ref_name }}
+          body_path: release-notes.md
+          files: src-tauri/target/release/bundle/nsis/UHook.Configurator_*_x64-setup.exe
+          generate_release_notes: false

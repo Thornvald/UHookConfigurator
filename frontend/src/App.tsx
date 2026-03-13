@@ -10,6 +10,7 @@ interface ProjectInfo {
   path: string;
   engine_association: string;
   ubt_path: string | null;
+  build_target: string | null;
   hook_exists: boolean;
 }
 
@@ -42,6 +43,8 @@ function App() {
         setProject(info);
         if (!info.ubt_path) {
           setError(`Could not find UnrealBuildTool for engine version '${info.engine_association}'. Ensure the engine is installed and registered.`);
+        } else if (!info.build_target) {
+          setError("Could not detect an Unreal Editor target. Make sure your project has a valid Source/*.Target.cs file.");
         }
       }
     } catch (err: any) {
@@ -51,7 +54,7 @@ function App() {
   };
 
   const installHook = async () => {
-    if (!project || !project.ubt_path) return;
+    if (!project || !project.ubt_path || !project.build_target) return;
     
     setInstallStatus("installing");
     setError(null);
@@ -59,8 +62,6 @@ function App() {
     try {
       await invoke("install_hook", {
         uprojectPath: project.path,
-        projectName: project.name,
-        ubtPath: project.ubt_path,
       });
       setInstallStatus("success");
       setProject({ ...project, hook_exists: true });
@@ -138,6 +139,9 @@ function App() {
                   </div>
                 </div>
                 <p className="text-xs text-[var(--color-muted)] break-all truncate" title={project.path}>{project.path}</p>
+                {project.build_target && (
+                  <p className="text-xs text-[var(--color-muted)]">Build target: {project.build_target}</p>
+                )}
                 
                 {project.hook_exists && (
                   <div className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-emerald-400 bg-emerald-400/10 px-2.5 py-1 rounded-md border border-emerald-400/20 self-start">
@@ -158,7 +162,7 @@ function App() {
           )}
 
           {/* Action Area */}
-          {project && project.ubt_path && (
+          {project && project.ubt_path && project.build_target && (
             <div className="mt-2 flex flex-col gap-3">
               {!project.hook_exists ? (
                 <button

@@ -1,13 +1,13 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "UHook Configurator",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "identifier": "com.uhook.configurator",
   "build": {
     "devUrl": "http://localhost:1420",
     "frontendDist": "../frontend/dist",
-    "beforeDevCommand": "bun run --cwd ../frontend dev",
-    "beforeBuildCommand": "bun run --cwd ../frontend build"
+    "beforeDevCommand": "bun run --cwd frontend dev",
+    "beforeBuildCommand": "bun run --cwd frontend build"
   },
   "app": {
     "windows": [

@@ -13,12 +13,8 @@ fn parse_project(path: String) -> Result<unreal::ProjectInfo, String> {
 }
 
 #[command]
-fn install_hook(
-    uproject_path: String,
-    project_name: String,
-    ubt_path: String,
-) -> Result<(), String> {
-    unreal::install_hook(&uproject_path, &project_name, &ubt_path)
+fn install_hook(uproject_path: String) -> Result<(), String> {
+    unreal::install_hook(&uproject_path)
 }
 
 #[command]
