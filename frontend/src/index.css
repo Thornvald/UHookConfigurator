@@ -1,0 +1,129 @@
+@import "tailwindcss";
+
+/* Base tokens and resets for UHook Configurator (Stellar theme). */
+:root {
+  color-scheme: dark;
+  --bg: #050505;
+  --bg-ink: #f2f2f2;
+  --surface: rgba(15, 15, 15, 0.92);
+  --surface-alt: rgba(24, 24, 24, 0.9);
+  --muted: #a6a6a6;
+  --accent: #d9d9d9;
+  --accent-strong: #ffffff;
+  --accent-warm: #bfbfbf;
+  --border: rgba(255, 255, 255, 0.12);
+  --shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+  --success: #d0d0d0;
+  --warning: #b8b8b8;
+  --error: #e0e0e0;
+}
+
+@theme {
+  --color-bg: var(--bg);
+  --color-bg-ink: var(--bg-ink);
+  --color-surface: var(--surface);
+  --color-surface-alt: var(--surface-alt);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-warm: var(--accent-warm);
+  --color-border: var(--border);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --shadow-main: var(--shadow);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Bahnschrift", "Trebuchet MS", "Segoe UI", sans-serif;
+  background: radial-gradient(circle at 22% 12%, #0d0d0d, #020202 60%, #000000 100%);
+  color: var(--bg-ink);
+  min-height: 100vh;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+p {
+  margin: 0;
+}
+
+/* Starfield Animations and Styles */
+.starfield {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+  --px: 0;
+  --py: 0;
+  display: block;
+  background: transparent;
+}
+
+.star-layer {
+  position: absolute;
+  inset: 0;
+  transform: translate3d(
+    calc(var(--px) * var(--depth)),
+    calc(var(--py) * var(--depth)),
+    0
+  );
+  transition: transform 0.18s ease-out;
+}
+
+.star-drift {
+  position: absolute;
+  inset: -12% 0;
+  animation: drift linear infinite;
+}
+
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background: #ffffff;
+  opacity: var(--alpha-max);
+  box-shadow: 0 0 var(--glow) rgba(255, 255, 255, 0.65);
+  animation-name: twinkle;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+}
+
+@keyframes drift {
+  0% {
+    transform: translateY(-6%);
+  }
+  100% {
+    transform: translateY(6%);
+  }
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: var(--alpha-min);
+    transform: scale(0.85);
+  }
+  45% {
+    opacity: calc(var(--alpha-min) + 0.12);
+    transform: scale(0.92);
+  }
+  50% {
+    opacity: var(--alpha-max);
+    transform: scale(1);
+  }
+  55% {
+    opacity: calc(var(--alpha-min) + 0.12);
+    transform: scale(0.92);
+  }
+}
